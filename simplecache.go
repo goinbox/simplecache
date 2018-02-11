@@ -29,21 +29,21 @@ func NewSimpleCache() *SimpleCache {
 }
 
 func New(shardCnt uint8, tickInterval time.Duration) *SimpleCache {
-	this := &SimpleCache{
+	s := &SimpleCache{
 		shardMap: shardmap.New(shardCnt),
 	}
 
-	go this.runJanitor(tickInterval)
+	go s.runJanitor(tickInterval)
 
-	return this
+	return s
 }
 
-func (this *SimpleCache) Set(key string, value interface{}, expire time.Duration) {
-	this.shardMap.Set(key, newCacheItem(value, expire))
+func (s *SimpleCache) Set(key string, value interface{}, expire time.Duration) {
+	s.shardMap.Set(key, newCacheItem(value, expire))
 }
 
-func (this *SimpleCache) Get(key string) (interface{}, bool) {
-	value, ok := this.shardMap.Get(key)
+func (s *SimpleCache) Get(key string) (interface{}, bool) {
+	value, ok := s.shardMap.Get(key)
 	if !ok {
 		return nil, false
 	}
@@ -60,18 +60,18 @@ func (this *SimpleCache) Get(key string) (interface{}, bool) {
 	return ci.value, true
 }
 
-func (this *SimpleCache) runJanitor(tickInterval time.Duration) {
+func (s *SimpleCache) runJanitor(tickInterval time.Duration) {
 	ticker := time.NewTicker(tickInterval)
 
 	for {
 		select {
 		case <-ticker.C:
 			now := time.Now().UnixNano()
-			this.shardMap.Walk(func(k string, v interface{}) {
+			s.shardMap.Walk(func(k string, v interface{}) {
 				ci, ok := v.(*cacheItem)
 				if ok {
 					if expired(now, ci) {
-						this.shardMap.Del(k)
+						s.shardMap.Del(k)
 					}
 				}
 			})
