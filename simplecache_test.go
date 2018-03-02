@@ -2,7 +2,6 @@ package simplecache
 
 import (
 	"github.com/goinbox/crypto"
-	"github.com/goinbox/gomisc"
 
 	"strconv"
 	"testing"
@@ -16,8 +15,6 @@ func init() {
 }
 
 func TestSetGet(t *testing.T) {
-	gomisc.PrintCallerFuncNameForTest()
-
 	for i := 0; i < 10000; i++ {
 		key := crypto.Md5String([]byte(strconv.Itoa(i)))
 		sc.Set(key, i, 10*time.Second)
