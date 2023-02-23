@@ -53,3 +53,14 @@ func TestSetNX(t *testing.T) {
 	ok = sc.SetNX(key, 1, time.Second*1)
 	assert.False(t, ok)
 }
+
+func TestDel(t *testing.T) {
+	key := "abc"
+	sc.Set(key, 1, NoExpire)
+	_, ok := sc.Get(key)
+	assert.True(t, ok)
+
+	sc.Del(key)
+	_, ok = sc.Get(key)
+	assert.False(t, ok)
+}

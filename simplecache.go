@@ -58,6 +58,10 @@ func (s *SimpleCache) SetNX(key string, value interface{}, expire time.Duration)
 	return true
 }
 
+func (s *SimpleCache) Del(key string) {
+	s.shardMap.Del(key)
+}
+
 func (s *SimpleCache) Get(key string) (interface{}, bool) {
 	value, ok := s.shardMap.Get(key)
 	if !ok {
