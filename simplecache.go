@@ -1,9 +1,10 @@
 package simplecache
 
 import (
-	"github.com/goinbox/shardmap"
-
+	"sync"
 	"time"
+
+	"github.com/goinbox/shardmap"
 )
 
 const (
@@ -22,6 +23,7 @@ type cacheItem struct {
 
 type SimpleCache struct {
 	shardMap *shardmap.ShardMap
+	lock     sync.Mutex
 }
 
 func NewSimpleCache() *SimpleCache {
@@ -40,6 +42,20 @@ func New(shardCnt uint8, tickInterval time.Duration) *SimpleCache {
 
 func (s *SimpleCache) Set(key string, value interface{}, expire time.Duration) {
 	s.shardMap.Set(key, newCacheItem(value, expire))
+}
+
+func (s *SimpleCache) SetNX(key string, value interface{}, expire time.Duration) bool {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	_, ok := s.Get(key)
+	if ok {
+		return false
+	}
+
+	s.shardMap.Set(key, newCacheItem(value, expire))
+
+	return true
 }
 
 func (s *SimpleCache) Get(key string) (interface{}, bool) {

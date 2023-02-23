@@ -3,6 +3,8 @@ package simplecache
 import (
 	"github.com/goinbox/crypto"
 
+	"github.com/stretchr/testify/assert"
+
 	"strconv"
 	"testing"
 	"time"
@@ -35,4 +37,19 @@ func TestSetGet(t *testing.T) {
 			t.Error(v, ok)
 		}
 	}
+}
+
+func TestSetNX(t *testing.T) {
+	key := "abc"
+	ok := sc.SetNX(key, 1, time.Second*1)
+	assert.True(t, ok)
+
+	time.Sleep(time.Second * 2)
+	_, ok = sc.Get(key)
+	assert.False(t, ok)
+
+	ok = sc.SetNX(key, 1, time.Second*1)
+	assert.True(t, ok)
+	ok = sc.SetNX(key, 1, time.Second*1)
+	assert.False(t, ok)
 }
