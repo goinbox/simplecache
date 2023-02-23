@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	DEF_TICK_INTERVAL = 30 * time.Second
+	DefTickInterval = 30 * time.Second
 
-	NO_EXPIRE = 0
+	NoExpire = 0
 )
 
 type cacheItem struct {
@@ -25,7 +25,7 @@ type SimpleCache struct {
 }
 
 func NewSimpleCache() *SimpleCache {
-	return New(shardmap.DEF_SHARD_CNT, DEF_TICK_INTERVAL)
+	return New(shardmap.DefShardCnt, DefTickInterval)
 }
 
 func New(shardCnt uint8, tickInterval time.Duration) *SimpleCache {
@@ -80,7 +80,7 @@ func (s *SimpleCache) runJanitor(tickInterval time.Duration) {
 }
 
 func expired(now int64, ci *cacheItem) bool {
-	if ci.expire == NO_EXPIRE {
+	if ci.expire == NoExpire {
 		return false
 	}
 
